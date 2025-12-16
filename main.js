@@ -1,18 +1,38 @@
-import { bootstrapCameraKit } from "@snap/camera-kit";
+// ✅ PRODUCTION Client ID
+const snapClientId = "60983cda-12ef-44bc-ba72-a16d0e7839bd";
 
-async function startCamera() {
-  const cameraKit = await bootstrapCameraKit({
-    apiToken: "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzY1ODQ0MzE2LCJzdWIiOiIzYThjOGMyMC0wNjNlLTRlM2QtYjExMy1hZDM4MjE0NmI4ZjN-U1RBR0lOR344YTgyNDYyNC04MWQ2LTRlZDUtOTMxZS00ZTc2NWZmNjZhMTgifQ.A8deMAFp2b0TzIp2PhAQOEb_CSkhVDTYdtv-8OzjmSg"
-  });
+// ✅ Your lenses (from your Snapchat organization)
+const lenses = {
+  "Hot Pink Glam": "d8a546d3-2d1a-48cb-94e7-f9f301fa0f79",
+  "Eyeliner Switch": "8d137e83-f861-4e83-a2f9-952e434a5867",
+  "Shadow Switch": "c51cc7b3-6ef9-4d01-9452-a49bcc483388",
+  "Blush Parade": "619726bf-0d1a-499f-a190-2b635682975a",
+  "Lipstick Parade": "abf4498e-dde9-4960-82f6-125b240b66ba"
+};
 
-  const session = await cameraKit.createSession();
+// Initialize Snap Camera Kit
+SnapKit.init({
+  clientId: snapClientId,
+  container: document.getElementById("camera-container"),
 
-  const video = document.getElementById("camera");
-  await session.setSource(video);
+  onReady: () => {
+    console.log("✅ Snap Camera Kit READY");
+    switchLens("Hot Pink Glam"); // auto-load first lens
+  },
 
-  document.body.appendChild(session.output.live);
+  onError: (err) => {
+    console.error("❌ Snap Camera Kit error:", err);
+    alert("Snap Camera Kit failed to load. Check Platform Identifier & Client ID.");
+  }
+});
 
-  await session.play();
+// Switch lens function
+function switchLens(lensName) {
+  const lensId = lenses[lensName];
+  if (!lensId) return;
+
+  SnapKit.loadLens(lensId)
+    .then(() => console.log("🎨 Loaded lens:", lensName))
+    .catch(err => console.error("Lens load error:", err));
 }
 
-startCamera();
